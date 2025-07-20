@@ -54,9 +54,12 @@ let Server = class Server {
     }
     setupMiddlewares() {
         this.app.use((0, cookie_parser_1.default)());
-        this.app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origin" }));
+        this.app.use((0, helmet_1.default)({
+            crossOriginResourcePolicy: { policy: "cross-origin" },
+            contentSecurityPolicy: false
+        }));
         this.app.use((0, cors_1.default)({
-            origin: "*",
+            origin: process.env.FRONTEND_URL,
             credentials: true,
             methods: ["GET", "POST"],
             allowedHeaders: ["Content-Type", "Authorization"],

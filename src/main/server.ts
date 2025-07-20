@@ -45,7 +45,7 @@ export class Server {
         this.setupMiddlewares();
         await this.connectToDatabase();
         this.setupRoutes();
-        this.server.listen(this.config.port , () => {
+        this.server.listen(this.config.port, () => {
             console.log(`Server running on port ${this.config.port}`);
         });
     }
@@ -53,11 +53,14 @@ export class Server {
     private setupMiddlewares() {
 
         this.app.use(cookieParser());
-        this.app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+        this.app.use(helmet({
+            crossOriginResourcePolicy: { policy: "cross-origin" },
+            contentSecurityPolicy: false
+        }));
 
         this.app.use(
             cors({
-                origin: "*",
+                origin: process.env.FRONTEND_URL!,
                 credentials: true,
                 methods: ["GET", "POST"],
                 allowedHeaders: ["Content-Type", "Authorization"],
