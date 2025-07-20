@@ -12,7 +12,6 @@ class ReelsController {
     handleNewPostUpload = async (req: Request, res: Response) => {
         const { profile, caption } = req.body;
         const postReel = req.file!;
-        console.log(postReel);
         const result = await this.reelsService!.handleNewPostUpload(profile, caption, postReel);
         res.status(result.status).json(result);
         return 
