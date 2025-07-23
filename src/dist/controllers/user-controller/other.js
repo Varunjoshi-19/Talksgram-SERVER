@@ -53,7 +53,6 @@ let UserHelperController = class UserHelperController {
         this.searchUsers = async (req, res) => {
             try {
                 const { username } = req.query;
-                console.log("this is the username ", username);
                 const searchedAccounts = await this.userHelper.searchUsers(String(username));
                 if (!searchedAccounts || searchedAccounts.length === 0) {
                     res.status(404).json({ message: "No users found" });

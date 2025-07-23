@@ -18,11 +18,13 @@ const MessageSchema = new mongoose.Schema({
         required: true
     },
 
-    username: {
-
+    senderUsername: {
+        type: String,
+        required: true,
+    },
+    receiverUsername: {
         type: String,
         required: true
-
     },
 
     initateTime: {
@@ -32,6 +34,11 @@ const MessageSchema = new mongoose.Schema({
 
     chat: {
         type: String,
+    },
+
+    seenStatus: {
+        type: Boolean,
+        default: false,
     },
 
     AdditionalData: [{

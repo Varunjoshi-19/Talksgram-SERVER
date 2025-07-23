@@ -1,12 +1,15 @@
 import { injectable } from "tsyringe";
 import crypto from "crypto";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
+import { MessageInfo } from "../../interfaces/user";
 
 @injectable()
 class ChatMessageService {
+
     async savePersonalChat(chatData: any) {
         try {
-            const savedChat = await PersonalChatDoc.create(chatData);
+            const { userId, otherUserId } = chatData;
+            const savedChat = await PersonalChatDoc.create({ ...chatData, seenStatus: userId === otherUserId });
             return {
                 status: 200,
                 success: true,
@@ -14,7 +17,6 @@ class ChatMessageService {
                 data: savedChat,
             };
         } catch (error: any) {
-            console.error(error);
             return {
                 status: 500,
                 success: false,
@@ -27,16 +29,17 @@ class ChatMessageService {
     async saveAdditionalData(allData: string, files: Express.Multer.File[]) {
         try {
             const parsedData = JSON.parse(allData);
-            const additionalData = files.map((file) => ({
+            const additionalData: any = files.map((file) => ({
                 data: file.buffer,
                 contentType: file.mimetype,
             }));
 
-            const dataToSave: any = {
+            const dataToSave: MessageInfo = {
                 userId: parsedData.userId,
                 otherUserId: parsedData.otherUserId,
                 chatId: parsedData.chatId,
-                username: parsedData.username,
+                senderUsername: parsedData.senderUsername,
+                receiverUsername: parsedData.receiverUsername,
                 initateTime: parsedData.initateTime,
                 AdditionalData: additionalData,
             };
@@ -70,11 +73,12 @@ class ChatMessageService {
                 contentType: "wav",
             };
 
-            const dataToSave: any = {
+            const dataToSave: MessageInfo = {
                 userId: parsedData.userId,
                 otherUserId: parsedData.otherUserId,
                 chatId: parsedData.chatId,
-                username: parsedData.username,
+                senderUsername: parsedData.senderUsername,
+                receiverUsername: parsedData.receiverUsername,
                 initateTime: parsedData.initateTime,
                 AdditionalData: [fileData],
             };
@@ -93,6 +97,28 @@ class ChatMessageService {
                 error: error.message,
             };
         }
+    }
+
+    async toogleAllSeenChats(senderId: string, receiverId: string) {
+        try {
+            const data = await PersonalChatDoc.updateMany(
+                {
+                    userId: senderId,
+                    otherUserId: receiverId,
+                    seenStatus: false
+                },
+                {
+                    $set: { seenStatus: true }
+                }
+            );
+
+            return { status: 200, success: true, message: "seen all chats!" };
+        } catch (error) {
+            return { status: 505, success: false, error: error }
+        }
+
+
+
     }
 
     generateChatId(mixedId: string): string {

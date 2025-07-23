@@ -49,9 +49,7 @@ class PostsApiController {
     fetchSinglePost = async (req: Request, res: Response) => {
 
         const id = req.params.id;
-        console.log("single post" , id);
         const result = await this.postsApiServices.handlefetchUserPost(id);
-        console.log(result);
         res.status(result.status).json({ post: result.post });
           return;
     }

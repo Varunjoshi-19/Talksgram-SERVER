@@ -101,7 +101,13 @@ class PostServices {
     async SharedPost(data: any, refId: string) {
 
         try {
-            const { userId, username, initateTime, otherUserId, chatId, sharedContent } = data;
+            const { userId,
+                senderUsername,
+                receiverUsername,
+                initateTime,
+                otherUserId,
+                chatId,
+                sharedContent } = data;
 
             if (!refId) {
                 return { message: "post refId required to share", status: 404 };
@@ -118,19 +124,21 @@ class PostServices {
                 chatId,
                 userId,
                 otherUserId,
-                username,
+                senderUsername,
+                receiverUsername,
                 initateTime,
                 sharedContent
             }
 
-            console.log("this is post that you are going to share ", storeMessage);
-
+            const id = sharedContent.refId;
             const sharedPost = await PersonalChatDoc.create(storeMessage);
+
             if (!sharedPost) {
                 return { message: "failed to share this post", status: 404 };
             }
 
-            return {message : "successfully shared this post" , status : 200};
+           await PostDoc.findByIdAndUpdate(id, { $inc: { postShare: 1 } });
+            return { message: "successfully shared this post", status: 200 };
         }
         catch (error) {
             return { message: error, status: 505 };

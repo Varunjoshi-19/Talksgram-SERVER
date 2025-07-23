@@ -47,6 +47,9 @@ export class ChatRoutes {
         this.router.get("/render-message-items/:id1/:id2", this.renderController.renderMessageItem.bind(this.renderController));
 
 
+        this.router.post("/seen-chats/:id1/:id2", this.chatController.handleSeenChats.bind(this.chatController));
+
+
         return this.router;
     }
 }

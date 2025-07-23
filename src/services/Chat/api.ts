@@ -1,5 +1,6 @@
 import { injectable } from "tsyringe";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
+import { ChattedUserPayload } from "../../interfaces";
 
 @injectable()
 class ChatApiServices {
@@ -41,25 +42,53 @@ class ChatApiServices {
 
     async fetchChattedUsers(userId: string) {
         try {
-            const users = await PersonalChatDoc.find({ otherUserId: userId }).sort({
-                initateTime: -1,
-            });
+            const users: any = await PersonalChatDoc.find({
+                $or: [
+                    { userId: userId },
+                    { otherUserId: userId }
+                ]
+            })
+                .select("chatId userId otherUserId senderUsername receiverUsername initateTime seenStatus chat")
+                .sort({ initateTime: -1 });
 
-            const uniqueUsers: any[] = [];
-            const usernames = new Set();
+            const uniqueUser = new Map<string, ChattedUserPayload>();
 
-            users.forEach((user) => {
-                if (!usernames.has(user.username)) {
-                    usernames.add(user.username);
-                    uniqueUsers.push(user);
+            users.forEach((each: any) => {
+
+                const id = userId === each.userId ? each.otherUserId : each.userId;
+                const name = userId === each.userId ? each.receiverUsername : each.senderUsername;
+
+
+                if (!uniqueUser.has(id)) {
+                    const entry: ChattedUserPayload = {
+                        chatId: each.chatId,
+                        userId: id,
+                        yourMessage: userId === each.userId,
+                        checkName: each.senderUsername,
+                        username: name ?? "Unknown",
+                        initateTime: each.initateTime,
+                        seenStatus: each.seenStatus,
+                        unseenCount: 0,
+                        recentChat: each.chat ?? "",
+                    };
+                    uniqueUser.set(id, entry);
+                }
+
+                if (each.otherUserId === userId && !each.seenStatus) {
+                    const otherUid = each.userId;
+                    const user = uniqueUser.get(otherUid);
+                    if (user) user.unseenCount++;
                 }
             });
 
+
+             
             return {
-                status: 202,
+                status: 200,
                 success: true,
-                data: uniqueUsers,
+                data: Array.from(uniqueUser.entries())
             };
+
         } catch (error: any) {
             return {
                 status: 500,
@@ -69,6 +98,11 @@ class ChatApiServices {
             };
         }
     }
+
+
+
+
+
 }
 
 export default ChatApiServices;

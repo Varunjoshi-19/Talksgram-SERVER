@@ -9,7 +9,6 @@ class ChatApiController {
     fetchAllChats = async (req: Request, res: Response) => {
         const chatId = req.params.id;
         const chatSkip = Number(req.query.chatSkip) || 0;
-
         const result = await this.chatService.fetchAllPersonalChats(chatId, chatSkip);
         res.status(result.status).json(result.success ? result.data : { error: result.message });
         return;
@@ -17,10 +16,9 @@ class ChatApiController {
 
     fetchChattedUsers = async (req: Request, res: Response) => {
         const userId = req.params.id;
-
         const result = await this.chatService.fetchChattedUsers(userId);
-        res.status(result.status).json(result.success ? { users: result.data } : { error: result.message });
-        return
+        res.status(result.status).json(result.success ? result.data : { error: result.message });
+        return;
     };
 }
 

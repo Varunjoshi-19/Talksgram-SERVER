@@ -10,3 +10,16 @@ export interface notificationPayload {
   receiverUserID: string,
   receiverUsername: string
 }
+
+
+export interface ChattedUserPayload {
+  chatId: string,
+  userId: string,
+  yourMessage : boolean,
+  checkName : string,
+  username: string,
+  initateTime: string,
+  seenStatus: string,
+  recentChat: string,
+  unseenCount: number
+}
