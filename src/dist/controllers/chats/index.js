@@ -34,6 +34,11 @@ let ChatMessageController = class ChatMessageController {
             res.status(result.status).json(result.success ? { message: result.message } : { error: result.message });
             return;
         };
+        this.handleSeenChats = async (req, res) => {
+            const { id1, id2 } = req.params;
+            const result = await this.chatService.toogleAllSeenChats(id1, id2);
+            res.status(result.status).json(result.success ? { message: result.message } : { error: result.error });
+        };
         this.generateChatId = (req, res) => {
             const chatId = this.chatService.generateChatId(req.params.id);
             res.status(202).json({ chatId });

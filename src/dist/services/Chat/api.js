@@ -45,21 +45,43 @@ let ChatApiServices = class ChatApiServices {
     }
     async fetchChattedUsers(userId) {
         try {
-            const users = await PersonalChatDoc_1.default.find({ otherUserId: userId }).sort({
-                initateTime: -1,
-            });
-            const uniqueUsers = [];
-            const usernames = new Set();
-            users.forEach((user) => {
-                if (!usernames.has(user.username)) {
-                    usernames.add(user.username);
-                    uniqueUsers.push(user);
+            const users = await PersonalChatDoc_1.default.find({
+                $or: [
+                    { userId: userId },
+                    { otherUserId: userId }
+                ]
+            })
+                .select("chatId userId otherUserId senderUsername receiverUsername initateTime seenStatus chat")
+                .sort({ initateTime: -1 });
+            const uniqueUser = new Map();
+            users.forEach((each) => {
+                const id = userId === each.userId ? each.otherUserId : each.userId;
+                const name = userId === each.userId ? each.receiverUsername : each.senderUsername;
+                if (!uniqueUser.has(id)) {
+                    const entry = {
+                        chatId: each.chatId,
+                        userId: id,
+                        yourMessage: userId === each.userId,
+                        checkName: each.senderUsername,
+                        username: name ?? "Unknown",
+                        initateTime: each.initateTime,
+                        seenStatus: each.seenStatus,
+                        unseenCount: 0,
+                        recentChat: each.chat ?? "",
+                    };
+                    uniqueUser.set(id, entry);
+                }
+                if (each.otherUserId === userId && !each.seenStatus) {
+                    const otherUid = each.userId;
+                    const user = uniqueUser.get(otherUid);
+                    if (user)
+                        user.unseenCount++;
                 }
             });
             return {
-                status: 202,
+                status: 200,
                 success: true,
-                data: uniqueUsers,
+                data: Array.from(uniqueUser.entries())
             };
         }
         catch (error) {

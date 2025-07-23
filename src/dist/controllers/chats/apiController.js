@@ -27,7 +27,7 @@ let ChatApiController = class ChatApiController {
         this.fetchChattedUsers = async (req, res) => {
             const userId = req.params.id;
             const result = await this.chatService.fetchChattedUsers(userId);
-            res.status(result.status).json(result.success ? { users: result.data } : { error: result.message });
+            res.status(result.status).json(result.success ? result.data : { error: result.message });
             return;
         };
     }

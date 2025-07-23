@@ -43,7 +43,6 @@ let UserController = class UserController {
         };
         this.newProfileHandler = async (req, res) => {
             try {
-                console.log("yes we recived data", req.body.id);
                 const { id } = req.body;
                 const updatedProfile = await this.userService.updateProfile(id, req.body, req.file);
                 res.status(200).json({ message: "Profile Updated Successfully", updatedProfile });

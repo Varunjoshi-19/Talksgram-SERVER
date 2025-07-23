@@ -15,7 +15,8 @@ const PersonalChatDoc_1 = __importDefault(require("../../models/PersonalChatDoc"
 let ChatMessageService = class ChatMessageService {
     async savePersonalChat(chatData) {
         try {
-            const savedChat = await PersonalChatDoc_1.default.create(chatData);
+            const { userId, otherUserId } = chatData;
+            const savedChat = await PersonalChatDoc_1.default.create({ ...chatData, seenStatus: userId === otherUserId });
             return {
                 status: 200,
                 success: true,
@@ -24,7 +25,6 @@ let ChatMessageService = class ChatMessageService {
             };
         }
         catch (error) {
-            console.error(error);
             return {
                 status: 500,
                 success: false,
@@ -44,7 +44,8 @@ let ChatMessageService = class ChatMessageService {
                 userId: parsedData.userId,
                 otherUserId: parsedData.otherUserId,
                 chatId: parsedData.chatId,
-                username: parsedData.username,
+                senderUsername: parsedData.senderUsername,
+                receiverUsername: parsedData.receiverUsername,
                 initateTime: parsedData.initateTime,
                 AdditionalData: additionalData,
             };
@@ -77,7 +78,8 @@ let ChatMessageService = class ChatMessageService {
                 userId: parsedData.userId,
                 otherUserId: parsedData.otherUserId,
                 chatId: parsedData.chatId,
-                username: parsedData.username,
+                senderUsername: parsedData.senderUsername,
+                receiverUsername: parsedData.receiverUsername,
                 initateTime: parsedData.initateTime,
                 AdditionalData: [fileData],
             };
@@ -94,6 +96,21 @@ let ChatMessageService = class ChatMessageService {
                 message: "Server internal error",
                 error: error.message,
             };
+        }
+    }
+    async toogleAllSeenChats(senderId, receiverId) {
+        try {
+            const data = await PersonalChatDoc_1.default.updateMany({
+                userId: senderId,
+                otherUserId: receiverId,
+                seenStatus: false
+            }, {
+                $set: { seenStatus: true }
+            });
+            return { status: 200, success: true, message: "seen all chats!" };
+        }
+        catch (error) {
+            return { status: 505, success: false, error: error };
         }
     }
     generateChatId(mixedId) {

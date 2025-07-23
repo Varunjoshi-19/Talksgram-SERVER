@@ -46,7 +46,8 @@ let SocketConnection = class SocketConnection {
         });
         socket.on("new-chat", (message) => {
             const info = {
-                username: message.username,
+                senderUsername: message.senderUsername,
+                receiverUsername: message.receiverUsername,
                 chatId: message.chatId,
             };
             if (message.chat)
@@ -57,7 +58,20 @@ let SocketConnection = class SocketConnection {
             if (message.audioData) {
                 info.audioData = message.audioData;
             }
+            if (message.sharedContent) {
+                info.sharedContent = message.sharedContent;
+                info.userId = message.userId;
+                info.otherUserId = message.otherUserId;
+                info.initateTime = message.initateTime;
+                info.senderUsername = message.senderUsername;
+                info.receiverUsername = message.receiverUsername;
+            }
             this.socketModel?.to(message.chatId).emit("chat-receive", info);
+        });
+        socket.on("new-message", (message) => {
+            const { receiverId } = message;
+            const socket1 = this.userIdToSocketId?.get(receiverId);
+            this.socketModel?.to(socket1?.socketId).emit("new-message", message);
         });
         socket.on("follow-request", (userData) => {
             this.handleSendRequest(userData, socket);

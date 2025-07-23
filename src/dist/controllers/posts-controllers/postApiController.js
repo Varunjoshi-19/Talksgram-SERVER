@@ -53,9 +53,7 @@ let PostsApiController = class PostsApiController {
         };
         this.fetchSinglePost = async (req, res) => {
             const id = req.params.id;
-            console.log("single post", id);
             const result = await this.postsApiServices.handlefetchUserPost(id);
-            console.log(result);
             res.status(result.status).json({ post: result.post });
             return;
         };

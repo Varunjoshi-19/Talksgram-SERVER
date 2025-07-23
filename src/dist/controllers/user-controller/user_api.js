@@ -72,7 +72,6 @@ let UserApiController = class UserApiController {
         this.fetchOnlineStatus = async (req, res) => {
             const userId = req.params.id;
             const status = this.socketApi.CheckUserOnlineStatus(userId);
-            console.log(status);
             res.status(status.status).json({ onlineStatus: status.onlineStatus });
             return;
         };

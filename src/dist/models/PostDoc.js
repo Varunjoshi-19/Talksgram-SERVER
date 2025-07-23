@@ -17,6 +17,10 @@ const PostSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0
     },
+    postShare: {
+        type: Number,
+        default: 0
+    },
     postDescription: {
         type: String,
         default: ""

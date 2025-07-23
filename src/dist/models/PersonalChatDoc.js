@@ -17,7 +17,11 @@ const MessageSchema = new mongoose_1.default.Schema({
         type: String,
         required: true
     },
-    username: {
+    senderUsername: {
+        type: String,
+        required: true,
+    },
+    receiverUsername: {
         type: String,
         required: true
     },
@@ -27,6 +31,10 @@ const MessageSchema = new mongoose_1.default.Schema({
     },
     chat: {
         type: String,
+    },
+    seenStatus: {
+        type: Boolean,
+        default: false,
     },
     AdditionalData: [{
             data: Buffer,
