@@ -13,11 +13,10 @@
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
-    "scripts": {
-        "build": "tsc", 
-        "start": "node ./src/dist/main/main.js"  
-                
-    },
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./src/dist/main/main.js"
+  },
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "body-parser": "^2.2.0",
@@ -41,4 +40,3 @@
     "tsyringe": "^4.10.0"
   }
 }
-

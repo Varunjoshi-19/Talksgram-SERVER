@@ -33,17 +33,10 @@ const PostSchema = new mongoose.Schema({
     author: {
 
         userId: {
-            type: String,
+            type: mongoose.Schema.ObjectId,
             required: true,
 
-        },
-
-        userAccId: {
-            type: String,
-            required: true
         }
-
-
     }
 
 }, { timestamps: true });

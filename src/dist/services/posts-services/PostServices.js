@@ -28,7 +28,6 @@ let PostServices = class PostServices {
             },
             author: {
                 userId: parsedProfile._id,
-                userAccId: parsedProfile.userAccId
             }
         };
         if (caption !== "")

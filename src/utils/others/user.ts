@@ -26,7 +26,7 @@ class UserHelper {
 
     async findAccount(key: "username" | "email", value: string) {
         if (key === "username") return await userDoc.findOne({ username: value });
-        return await userDoc.findOne({ email: value });
+         return await userDoc.findOne({ email: value });
     }
 
     verifyAndGenerateToken(password: string, user: any): string | null {

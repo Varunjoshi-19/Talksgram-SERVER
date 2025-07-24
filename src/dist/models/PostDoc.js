@@ -27,12 +27,8 @@ const PostSchema = new mongoose_1.default.Schema({
     },
     author: {
         userId: {
-            type: String,
+            type: mongoose_1.default.Schema.ObjectId,
             required: true,
-        },
-        userAccId: {
-            type: String,
-            required: true
         }
     }
 }, { timestamps: true });

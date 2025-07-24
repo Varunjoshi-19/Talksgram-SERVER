@@ -32,6 +32,8 @@ let UserService = class UserService {
         const user = await this.userHelper.findAccount(key, value);
         if (!user)
             return { status: 404, success: false, message: "Invalid username or email" };
+        const id = user?._id;
+        const profile = await ProfileDoc_1.default.findOne({ userAccId: id }).select("_id username email fullname post bio followers following").lean();
         const token = this.userHelper.verifyAndGenerateToken(password, user);
         if (!token)
             return { status: 400, success: false, message: "Incorrect password" };
@@ -41,11 +43,7 @@ let UserService = class UserService {
             data: {
                 message: "Login successful",
                 accessToken: token,
-                user: {
-                    id: user._id,
-                    username: user.username,
-                    email: user.email,
-                },
+                profile: profile
             },
         };
     }

@@ -19,23 +19,11 @@ let UserApiController = class UserApiController {
     constructor(userApiServices, socketApi) {
         this.userApiServices = userApiServices;
         this.socketApi = socketApi;
-        this.fetchProfileDetails = async (req, res) => {
+        this.getIdAndUsername = async (req, res) => {
             try {
                 const id = req.params.id;
-                const userProfile = await this.userApiServices.getProfileDetails(id);
-                res.status(202).json({ message: "User profile sent", userProfile });
-                return;
-            }
-            catch (error) {
-                res.status(404).json({ error: error.message });
-                return;
-            }
-        };
-        this.fetchOtherProfile = async (req, res) => {
-            try {
-                const id = req.params.id;
-                const userProfile = await this.userApiServices.getOtherProfile(id);
-                res.status(202).json({ message: "User profile sent", userProfile });
+                const userProfile = await this.userApiServices.handleGetIdAndUsername(id);
+                res.status(202).json(userProfile);
                 return;
             }
             catch (error) {
@@ -45,7 +33,7 @@ let UserApiController = class UserApiController {
         };
         this.fetchAllAccounts = async (req, res) => {
             try {
-                const { email } = req.body;
+                const email = String(req.query.email);
                 const allAccounts = await this.userApiServices.getAllAccounts(email);
                 res.status(202).json({ allAccounts });
                 return;
@@ -56,14 +44,10 @@ let UserApiController = class UserApiController {
             }
         };
         this.fetchSingleUserProfile = async (req, res) => {
-            const query = {};
-            if (req.query.username)
-                query.username = String(req.query.username);
-            if (req.params.id)
-                query._id = String(req.params.id);
-            const result = await this.userApiServices.fetchSingleUserProfile(query);
+            const id = req.params.id;
+            const result = await this.userApiServices.fetchSingleUserProfile(id);
             if (result.success) {
-                res.status(result.status).json({ userProfile: result.data });
+                res.status(result.status).json(result.data);
                 return;
             }
             res.status(result.status).json({ error: result.message });

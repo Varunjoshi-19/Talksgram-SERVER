@@ -69,10 +69,9 @@ let UserRoutes = class UserRoutes {
         router.post("/update-profile", upload.single("profileImage"), this.userController.newProfileHandler.bind(this.userController));
         router.post("/login", this.userController.login.bind(this.userController));
         router.post("/signup", this.userController.signup.bind(this.userController));
-        router.post("/fetchProfileDetails/:id", this.userapiController.fetchProfileDetails.bind(this.userapiController));
-        router.get("/fetchUser/:id", this.userapiController.fetchSingleUserProfile.bind(this.userapiController));
-        router.post("/fetchOtherUser/:id", this.userapiController.fetchOtherProfile.bind(this.userapiController));
-        router.post("/allAccounts", this.userapiController.fetchAllAccounts.bind(this.userapiController));
+        router.get("/fetch-profile-details/:id", this.userapiController.fetchSingleUserProfile.bind(this.userapiController));
+        router.get("/getIdAndUsername/:id", this.userapiController.getIdAndUsername.bind(this.userapiController));
+        router.get("/allAccounts", this.userapiController.fetchAllAccounts.bind(this.userapiController));
         router.post("/sendOtp", this.userValidation.generateOTP.bind(this.userValidation));
         router.post("/verifyOtp", this.userValidation.verifyOTP.bind(this.userValidation));
         router.post("/resetPassword", this.userValidation.resetPassword.bind(this.userValidation));

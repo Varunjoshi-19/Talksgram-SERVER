@@ -12,7 +12,7 @@ class UserController {
     login: RequestHandler = async (req, res) => {
         try {
             const result = await this.userService.login(req.body);
-            res.status(result.status).json(result.success ? { UserData : result.data} : { error: result.message });
+            res.status(result.status).json(result.success ? { data : result.data} : { error: result.message });
             return;
         } catch (err: any) {
             res.status(500).json({ error: err.message });
