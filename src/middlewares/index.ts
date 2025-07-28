@@ -7,7 +7,6 @@ class MiddleWares {
     checkTheOriginOfRequest(originUrl: string, req: Request, res: Response, next: NextFunction) {
 
         const referer = req.headers["referer"];
-        console.log(referer);
 
         const isFromFrontend = (referer && referer == `${originUrl}/`);
 

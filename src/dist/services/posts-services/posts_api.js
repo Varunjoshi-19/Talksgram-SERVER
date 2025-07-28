@@ -17,6 +17,8 @@ const Comments_1 = __importDefault(require("../../models/Comments"));
 const PostDoc_1 = __importDefault(require("../../models/PostDoc"));
 const LikedPost_1 = __importDefault(require("../../models/LikedPost"));
 const index_1 = __importDefault(require("../../utils/index"));
+const StoryDoc_1 = __importDefault(require("../../models/StoryDoc"));
+const NoteDoc_1 = __importDefault(require("../../models/NoteDoc"));
 let PostsApiServices = class PostsApiServices {
     constructor(allHelp) {
         this.allHelp = allHelp;
@@ -84,6 +86,55 @@ let PostsApiServices = class PostsApiServices {
         catch (error) {
             return { status: 505, message: error };
         }
+    }
+    async handleFetchAllStories() {
+        try {
+            const stories = await StoryDoc_1.default.find({}).select("_id userId username storyData.contentType storyData.duration").lean();
+            if (!stories) {
+                return { status: 404, success: false, message: "no stories available" };
+            }
+            return { status: 200, success: true, data: stories };
+        }
+        catch (error) {
+            return { status: 505, success: false, message: error.message };
+        }
+    }
+    async fetchStory(id) {
+        try {
+            const story = await StoryDoc_1.default.findOne({ userId: id }).select("_id userId storyData.contentType storyData.duration username expiredAt").lean();
+            if (!story) {
+                return { status: 404, success: false, message: "no story" };
+            }
+            return { status: 200, success: true, data: story };
+        }
+        catch (error) {
+            return { status: 505, success: false, message: error.message };
+        }
+    }
+    async fetchSingleNote(id) {
+        try {
+            if (!id) {
+                return { status: 404, success: false, message: "id required!" };
+            }
+            const note = await NoteDoc_1.default.findOne({ userId: id }).select("_id userId noteMessage").lean();
+            if (!note) {
+                return { status: 404, success: false, message: "no note there!" };
+            }
+            return { status: 200, success: true, data: note };
+        }
+        catch (error) {
+            return { status: 505, success: false, message: error.message };
+        }
+    }
+    async removeStory(id) {
+        if (!id) {
+            return { status: 404, success: false, message: "id required" };
+        }
+        const deleteStory = await StoryDoc_1.default.findByIdAndDelete(id);
+        if (!deleteStory) {
+            return { status: 404, success: true, message: "failed to delete" };
+        }
+        return { status: 200, success: true, message: "story removed!" };
     }
 };
 PostsApiServices = __decorate([

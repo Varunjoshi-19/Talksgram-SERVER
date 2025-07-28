@@ -21,7 +21,6 @@ export class CacheService {
     handleAlreadyNotified(userData: notificationPayload): boolean {
         const { senderUserID, receiverUserID }: notificationPayload = userData;
         const senders = this.notificationCache?.get(senderUserID);
-        console.log(senders);
         return senders?.has(receiverUserID) || false;
 
     }
@@ -38,7 +37,6 @@ export class CacheService {
                 this.notificationCache.delete(senderUserID);
             }
 
-            console.log("user has been removed!");
 
         }, 5000);
     }

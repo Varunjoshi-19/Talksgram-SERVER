@@ -85,7 +85,6 @@ let UserService = class UserService {
             };
         }
         catch (error) {
-            console.log(error.message);
             return {
                 status: 505,
                 success: false,
@@ -96,7 +95,6 @@ let UserService = class UserService {
         }
     }
     async updateProfile(id, data, file) {
-        console.log("id over here", id);
         const NewProfileData = {};
         if (data.fullname) {
             if (data.fullname === "")
@@ -121,7 +119,6 @@ let UserService = class UserService {
             };
         }
         const existingDetails = await ProfileDoc_1.default.findById(id);
-        console.log("existig details", existingDetails);
         if (!existingDetails)
             throw new Error("Profile not found");
         const existingUsername = existingDetails.username;

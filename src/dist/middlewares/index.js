@@ -10,7 +10,6 @@ const tsyringe_1 = require("tsyringe");
 let MiddleWares = class MiddleWares {
     checkTheOriginOfRequest(originUrl, req, res, next) {
         const referer = req.headers["referer"];
-        console.log(referer);
         const isFromFrontend = (referer && referer == `${originUrl}/`);
         if (!isFromFrontend) {
             res.status(403).send({ error: "Forbidden - Invalid request of origin try from main!" });

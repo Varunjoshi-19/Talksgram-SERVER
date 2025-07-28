@@ -57,6 +57,28 @@ let PostsApiController = class PostsApiController {
             res.status(result.status).json({ post: result.post });
             return;
         };
+        this.fetchAllStories = async (req, res) => {
+            const result = await this.postsApiServices.handleFetchAllStories();
+            res.status(result.status).json(result.success ? result.data : result.message);
+        };
+        this.handleGetUploadedStory = async (req, res) => {
+            const id = req.params.id;
+            const result = await this.postsApiServices.fetchStory(id);
+            res.status(result?.status).json(result.success ? result.data : result?.message);
+            return;
+        };
+        this.handleGetNote = async (req, res) => {
+            const id = req.params.id;
+            const result = await this.postsApiServices.fetchSingleNote(id);
+            res.status(result.status).json(result.success ? result.data : result.message);
+            return;
+        };
+        this.handleRemoveStory = async (req, res) => {
+            const id = req.params.id;
+            const result = await this.postsApiServices.removeStory(id);
+            res.status(result.status).json(result.message);
+            return;
+        };
     }
 };
 PostsApiController = __decorate([

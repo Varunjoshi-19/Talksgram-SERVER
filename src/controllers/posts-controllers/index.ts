@@ -16,7 +16,6 @@ class PostController {
 
     handleAddLikePost = async (req: Request, res: Response) => {
         const { postId, userId } = req.body;
-        console.log("like post");
         const result = await this.postServices.handleAddLikePost(postId, userId);
         res.status(result.status).json(result);
         return
@@ -39,11 +38,28 @@ class PostController {
     handleSharePost = async (req: Request, res: Response) => {
         const id = req.params.id;
         const data = req.body;
-        const result = await this.postServices.SharedPost(data , id);
-        console.log(result);
+        const result = await this.postServices.SharedPost(data, id);
         res.status(result?.status).json(result);
         return;
     }
+
+    handleUploadNewStory = async (req: Request, res: Response) => {
+
+        const data = req.body;
+        const storyFile = req.file!;
+        const result = await this.postServices.UploadNewStory(data, storyFile);
+        res.status(result.status).json({ message: result.success ? "uploaded" : "failed to add story!" });
+        return;
+    }
+
+    handleAddNewNote = async (req : Request , res : Response) => { 
+        const data = req.body;
+        const result =  await this.postServices.UploadNewNote(data);
+        res.status(result.status).json(result.message);
+        return;
+    }
+
+
 }
 
 export default PostController;

@@ -14,6 +14,7 @@ const ProfileDoc_1 = __importDefault(require("../../models/ProfileDoc"));
 const PersonalChatDoc_1 = __importDefault(require("../../models/PersonalChatDoc"));
 const PostDoc_1 = __importDefault(require("../../models/PostDoc"));
 const ReelDoc_1 = __importDefault(require("../../models/ReelDoc"));
+const StoryDoc_1 = __importDefault(require("../../models/StoryDoc"));
 let RenderService = class RenderService {
     async getProfileImage(id) {
         try {
@@ -127,6 +128,25 @@ let RenderService = class RenderService {
                 status: 200,
                 contentType: post.reelVideo.contentType,
                 data: post.reelVideo.data,
+            };
+        }
+        catch (error) {
+            return { status: 500, error: "Server error while fetching video" };
+        }
+    }
+    async handleRenderStory(id) {
+        if (!id) {
+            return { status: 400, error: "Invalid ID provided" };
+        }
+        try {
+            const post = await StoryDoc_1.default.findOne({ _id: id });
+            if (!post?.storyData?.data) {
+                return { status: 404, error: "Video not found" };
+            }
+            return {
+                status: 200,
+                contentType: post.storyData.contentType,
+                data: post.storyData.data,
             };
         }
         catch (error) {

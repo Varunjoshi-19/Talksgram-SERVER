@@ -3,6 +3,7 @@ import ProfileDoc from "../../models/ProfileDoc";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
 import PostDoc from "../../models/PostDoc";
 import ReelDoc from "../../models/ReelDoc";
+import StoryDoc from "../../models/StoryDoc";
 
 @injectable()
 class RenderService {
@@ -133,6 +134,28 @@ class RenderService {
                 status: 200,
                 contentType: post.reelVideo.contentType,
                 data: post.reelVideo.data,
+            };
+        } catch (error: any) {
+            return { status: 500, error: "Server error while fetching video" };
+        }
+    }
+
+    async handleRenderStory(id: string) {
+        if (!id) {
+            return { status: 400, error: "Invalid ID provided" };
+        }
+
+        try {
+            const post = await StoryDoc.findOne({ _id: id });
+
+            if (!post?.storyData?.data) {
+                return { status: 404, error: "Video not found" };
+            }
+
+            return {
+                status: 200,
+                contentType: post.storyData.contentType,
+                data: post.storyData.data,
             };
         } catch (error: any) {
             return { status: 500, error: "Server error while fetching video" };

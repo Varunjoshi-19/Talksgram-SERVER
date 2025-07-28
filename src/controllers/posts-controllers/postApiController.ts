@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { autoInjectable } from "tsyringe";
 import PostsApiServices from "../../services/posts-services/posts_api";
+import NoteDoc from "../../models/NoteDoc";
 
 @autoInjectable()
 class PostsApiController {
@@ -51,7 +52,34 @@ class PostsApiController {
         const id = req.params.id;
         const result = await this.postsApiServices.handlefetchUserPost(id);
         res.status(result.status).json({ post: result.post });
-          return;
+        return;
+    }
+
+    fetchAllStories = async (req: Request, res: Response) => {
+        const result = await this.postsApiServices.handleFetchAllStories();
+        res.status(result.status).json(result.success ? result.data : result.message);
+
+    }
+
+    handleGetUploadedStory = async (req: Request, res: Response) => {
+        const id = req.params.id;
+        const result = await this.postsApiServices.fetchStory(id);
+        res.status(result?.status).json(result.success ? result.data : result?.message)
+        return;
+    }
+
+    handleGetNote = async (req: Request, res: Response) => {
+        const id = req.params.id;
+        const result = await this.postsApiServices.fetchSingleNote(id);
+        res.status(result.status).json(result.success ? result.data : result.message);
+        return;
+    }
+
+    handleRemoveStory = async (req: Request, res: Response) => {
+        const id = req.params.id;
+        const result = await this.postsApiServices.removeStory(id);
+        res.status(result.status).json(result.message);
+        return;
     }
 }
 

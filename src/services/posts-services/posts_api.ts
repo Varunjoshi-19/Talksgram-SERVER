@@ -3,6 +3,8 @@ import CommentDoc from "../../models/Comments";
 import PostDoc from "../../models/PostDoc";
 import LikedPostDoc from "../../models/LikedPost";
 import AllHelpServices from "../../utils/index";
+import StoryDoc from "../../models/StoryDoc";
+import NoteDoc from "../../models/NoteDoc";
 
 @autoInjectable()
 class PostsApiServices {
@@ -67,7 +69,7 @@ class PostsApiServices {
                 return { status: 404, message: "post id missing!" };
             }
 
-            const post = await PostDoc.findOne({ _id: id }, {"author.userId" : 1, "author.userAccId" : 1 , postLike : 1, createdAt : 1});
+            const post = await PostDoc.findOne({ _id: id }, { "author.userId": 1, "author.userAccId": 1, postLike: 1, createdAt: 1 });
             if (!post) {
                 return { status: 404, message: "post not available" }
             }
@@ -77,6 +79,62 @@ class PostsApiServices {
             return { status: 505, message: error };
         }
     }
+
+    async handleFetchAllStories() {
+        try {
+            const stories = await StoryDoc.find({}).select("_id userId username storyData.contentType storyData.duration").lean();
+            if (!stories) {
+                return { status: 404, success: false, message: "no stories available" }
+            }
+
+            return { status: 200, success: true, data: stories }
+        }
+        catch (error: any) {
+            return { status: 505, success: false, message: error.message }
+        }
+    }
+
+    async fetchStory(id: string) {
+        try {
+            const story = await StoryDoc.findOne({ userId: id }).select("_id userId storyData.contentType storyData.duration username expiredAt").lean();
+            if (!story) {
+                return { status: 404, success: false, message: "no story" }
+            }
+            return { status: 200, success: true, data: story }
+        } catch (error: any) {
+            return { status: 505, success: false, message: error.message }
+        }
+    }
+
+    async fetchSingleNote(id: string) {
+        try {
+            if (!id) {
+                return { status: 404, success: false, message: "id required!" };
+
+            }
+            const note = await NoteDoc.findOne({ userId: id }).select("_id userId noteMessage").lean();
+            if (!note) {
+                return { status: 404, success: false, message: "no note there!" };
+            }
+            return { status: 200, success: true, data: note };
+        }
+        catch (error: any) {
+            return { status: 505, success: false, message: error.message };
+        }
+    }
+
+    async removeStory(id: string) {
+        if (!id) {
+            return { status: 404, success: false, message: "id required" }
+        }
+        const deleteStory = await StoryDoc.findByIdAndDelete(id);
+        if (!deleteStory) {
+            return { status: 404, success: true, message: "failed to delete" }
+        }
+        return { status: 200, success: true, message: "story removed!" }
+    }
 }
+
+
 
 export default PostsApiServices;

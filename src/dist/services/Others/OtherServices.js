@@ -16,7 +16,6 @@ class CacheService {
     handleAlreadyNotified(userData) {
         const { senderUserID, receiverUserID } = userData;
         const senders = this.notificationCache?.get(senderUserID);
-        console.log(senders);
         return senders?.has(receiverUserID) || false;
     }
     handleRemoveNotification(userData) {
@@ -27,7 +26,6 @@ class CacheService {
             if (senders?.size === 0) {
                 this.notificationCache.delete(senderUserID);
             }
-            console.log("user has been removed!");
         }, 5000);
     }
 }

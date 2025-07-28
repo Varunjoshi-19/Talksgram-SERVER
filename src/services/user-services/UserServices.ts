@@ -87,7 +87,6 @@ class UserService {
 
         }
         catch (error: any) {
-            console.log(error.message)
             return {
                 status: 505,
                 success: false,
@@ -101,7 +100,6 @@ class UserService {
     }
 
     async updateProfile(id: string, data: any, file?: Express.Multer.File) {
-        console.log("id over here", id);
         const NewProfileData: any = {};
 
         if (data.fullname) {
@@ -129,7 +127,6 @@ class UserService {
         }
 
         const existingDetails = await ProfileDoc.findById(id);
-        console.log("existig details", existingDetails);
         if (!existingDetails) throw new Error("Profile not found");
 
         const existingUsername = existingDetails.username;

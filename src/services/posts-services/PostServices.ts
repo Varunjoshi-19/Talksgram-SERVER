@@ -4,6 +4,8 @@ import LikedPostDoc from "../../models/LikedPost";
 import ProfileDoc from "../../models/ProfileDoc";
 import CommentDoc from "../../models/Comments";
 import PersonalChatDoc from "../../models/PersonalChatDoc";
+import StoryDoc from "../../models/StoryDoc";
+import NoteDoc from "../../models/NoteDoc";
 
 @autoInjectable()
 class PostServices {
@@ -136,13 +138,79 @@ class PostServices {
                 return { message: "failed to share this post", status: 404 };
             }
 
-           await PostDoc.findByIdAndUpdate(id, { $inc: { postShare: 1 } });
+            await PostDoc.findByIdAndUpdate(id, { $inc: { postShare: 1 } });
             return { message: "successfully shared this post", status: 200 };
         }
         catch (error) {
             return { message: error, status: 505 };
         }
     }
+
+    async UploadNewStory(data: any, storyFile: Express.Multer.File) {
+        try {
+            const { userId, username, storyDuration, createdTime, expiredAt } = data;
+            if (!username || !userId || !createdTime || !expiredAt || !storyFile) {
+                return { status: 404, success: false };
+            }
+
+            // check already posted 
+            const alreadyStory = await StoryDoc.findOne({ userId: userId });
+            if (alreadyStory) {
+                return { status: 404, success: false, message: "story already there" }
+            }
+
+            const story = new StoryDoc({
+                userId: userId,
+                username: username || "Unknown",
+                storyData: {
+                    data: storyFile.buffer,
+                    duration: Number(storyDuration),
+                    contentType: storyFile.mimetype
+                },
+                createdTime: createdTime,
+                expiredAt: expiredAt
+            });
+
+            await story.save();
+
+            return { status: 200, success: true };
+
+        } catch (error: any) {
+            return { status: 505, success: false };
+        }
+
+    }
+
+    async UploadNewNote(data: any) {
+        try {
+            const { userId, note, expiredAt } = data;
+            if (!userId || !note || !expiredAt) {
+                return { status: 404, success: false, message: "required all details" }
+            }
+            const noteData: any = {
+                userId,
+                noteMessage: note,
+                expiredAt
+            }
+            const existingNote = await NoteDoc.findOne({ userId: userId }).lean();
+            if (existingNote) {
+                await NoteDoc.findOneAndUpdate({ userId: userId }, noteData);
+                return { status: 200, success: true, message: "new note added!" }
+            }
+
+            const newNote = new NoteDoc(noteData);
+            await newNote.save();
+
+            return { status: 200, success: true, message: "new note added!" }
+        } catch (error) {
+            return { status: 505, success: false, message: "internal error failed to add!" }
+        }
+
+    }
+
+
+
+
 }
 
 export default PostServices;

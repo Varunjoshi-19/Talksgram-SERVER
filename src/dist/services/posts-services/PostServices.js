@@ -15,6 +15,8 @@ const LikedPost_1 = __importDefault(require("../../models/LikedPost"));
 const ProfileDoc_1 = __importDefault(require("../../models/ProfileDoc"));
 const Comments_1 = __importDefault(require("../../models/Comments"));
 const PersonalChatDoc_1 = __importDefault(require("../../models/PersonalChatDoc"));
+const StoryDoc_1 = __importDefault(require("../../models/StoryDoc"));
+const NoteDoc_1 = __importDefault(require("../../models/NoteDoc"));
 let PostServices = class PostServices {
     async handleNewPostUpload(profile, caption, postImage) {
         if (!postImage || !profile) {
@@ -122,6 +124,59 @@ let PostServices = class PostServices {
         }
         catch (error) {
             return { message: error, status: 505 };
+        }
+    }
+    async UploadNewStory(data, storyFile) {
+        try {
+            const { userId, username, storyDuration, createdTime, expiredAt } = data;
+            if (!username || !userId || !createdTime || !expiredAt || !storyFile) {
+                return { status: 404, success: false };
+            }
+            // check already posted 
+            const alreadyStory = await StoryDoc_1.default.findOne({ userId: userId });
+            if (alreadyStory) {
+                return { status: 404, success: false, message: "story already there" };
+            }
+            const story = new StoryDoc_1.default({
+                userId: userId,
+                username: username || "Unknown",
+                storyData: {
+                    data: storyFile.buffer,
+                    duration: Number(storyDuration),
+                    contentType: storyFile.mimetype
+                },
+                createdTime: createdTime,
+                expiredAt: expiredAt
+            });
+            await story.save();
+            return { status: 200, success: true };
+        }
+        catch (error) {
+            return { status: 505, success: false };
+        }
+    }
+    async UploadNewNote(data) {
+        try {
+            const { userId, note, expiredAt } = data;
+            if (!userId || !note || !expiredAt) {
+                return { status: 404, success: false, message: "required all details" };
+            }
+            const noteData = {
+                userId,
+                noteMessage: note,
+                expiredAt
+            };
+            const existingNote = await NoteDoc_1.default.findOne({ userId: userId }).lean();
+            if (existingNote) {
+                await NoteDoc_1.default.findOneAndUpdate({ userId: userId }, noteData);
+                return { status: 200, success: true, message: "new note added!" };
+            }
+            const newNote = new NoteDoc_1.default(noteData);
+            await newNote.save();
+            return { status: 200, success: true, message: "new note added!" };
+        }
+        catch (error) {
+            return { status: 505, success: false, message: "internal error failed to add!" };
         }
     }
 };

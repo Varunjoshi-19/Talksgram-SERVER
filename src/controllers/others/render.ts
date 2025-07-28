@@ -59,7 +59,28 @@ class RenderController {
 
         res.contentType(result.contentType!);
         res.send(result.data);
+
+        return;
     };
+
+
+    RenderStory = async (req: Request, res: Response) => {
+        const id = req.params.id?.trim();
+        const result = await this.renderService.handleRenderStory(id);
+
+        if (result.error) {
+            res.status(result.status).json({ error: result.error });
+            return
+        }
+
+        res.contentType(result.contentType!);
+        res.send(result.data);
+
+        return;
+
+    }
+
+
 
 
 }

@@ -13,7 +13,9 @@ class ChatApiServices {
                 .sort({ initateTime: -1 })
                 .skip(chatSkip)
                 .limit(limit)
+                .select("chatId userId otherUserId senderUsername receiverUsername initateTime chat seenStatus sharedContent AdditionalData._id AdditionalData.contentType")
                 .lean();
+
 
             chats = chats.reverse();
 
@@ -82,7 +84,7 @@ class ChatApiServices {
             });
 
 
-             
+
             return {
                 status: 200,
                 success: true,

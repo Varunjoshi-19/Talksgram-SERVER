@@ -57,7 +57,7 @@ let PostRouter = class PostRouter {
         this.postApiController = postApiController;
         this.renderController = renderController;
         this.router = (0, express_1.Router)();
-        this.upload = (0, multer_1.default)({ storage: (0, multer_1.memoryStorage)(), limits: { fieldSize: 5 * 1024 * 1024 } });
+        this.upload = (0, multer_1.default)({ storage: (0, multer_1.memoryStorage)(), limits: { fieldSize: 100 * 1024 * 1024 } });
     }
     getRoutes() {
         this.router.post("/allPosts/:id", this.postApiController.fetchAllPosts.bind(this.postApiController));
@@ -69,8 +69,15 @@ let PostRouter = class PostRouter {
         this.router.post("/add-comment", this.postController.handlePostComment.bind(this.postController));
         this.router.post("/fetch-comments/:id", this.postApiController.fetchAllComments.bind(this.postApiController));
         this.router.post("/share-post/:id", this.postController.handleSharePost.bind(this.postController));
+        this.router.post("/share-story", this.upload.single("file"), this.postController.handleUploadNewStory.bind(this.postController));
+        this.router.post("/new-note", this.upload.none(), this.postController.handleAddNewNote.bind(this.postController));
         this.router.get("/fetch-single-post/:id", this.postApiController.fetchSinglePost.bind(this.postApiController));
+        this.router.get("/fetch-all-stories", this.postApiController.fetchAllStories.bind(this.postApiController));
+        this.router.get("/fetch-story/:id", this.postApiController.handleGetUploadedStory.bind(this.postApiController));
+        this.router.get("/fetch-note/:id", this.postApiController.handleGetNote.bind(this.postApiController));
+        this.router.delete("/remove-story/:id", this.postApiController.handleRemoveStory.bind(this.postApiController));
         this.router.get("/postImage/:id", this.renderController.renderPostImage.bind(this.renderController));
+        this.router.get("/render-story/:id", this.renderController.RenderStory.bind(this.renderController));
         // router.post("/deletePost", );  // TODO LATER
         return this.router;
     }
